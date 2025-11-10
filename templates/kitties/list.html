@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Kitties - Kitty Alert</title>
+</head>
+<body>
+	<h1>😻 Available Kitties</h1>
+	<p>Welcome, {{ adopter.user.username }}! <a href="{% url 'adopter_detail' adopter.id %}">View My Saved Kitties</a></p>
+
+  {% if error %}
+    <div class="alert alert-danger" role="alert">
+      <span>{{ error }}</span>
+    </div>
+  {% endif %}
+
+	{% if kitties %}
+		<ul>
+			{% for kitty in kitties %}
+				<li>
+					{% if kitty.image_url %}
+						<img src="{{ kitty.image_url }}" alt="{{ kitty.name }}" style="max-width: 200px;">
+					{% endif %}
+					<h2>{{ kitty.name }}</h2>
+          <div>
+            {% for image_url in kitty.image_urls %}
+              <img src="{{ image_url }}" alt="{{ kitty.name }}" style="max-width: 200px;">
+            {% endfor %}
+					<dl>
+						<dt>Age:</dt>
+						<dd>{{ kitty.age }} years</dd>
+						<dt>Weight:</dt>
+						<dd>{{ kitty.weight }} lbs</dd>
+						<dt>Gender:</dt>
+						<dd>{{ kitty.gender }}</dd>
+						<dt>Breed:</dt>
+						<dd>{{ kitty.breed }}</dd>
+						<dt>Color:</dt>
+						<dd>{{ kitty.color }}</dd>
+						<dt>Shelter:</dt>
+						<dd>{{ kitty.shelter.name }}</dd>
+					</dl>
+          {% if kitty in adopter.kitties.all %}
+            <form method="post" action="{% url 'kitty_unsave' kitty.id adopter.id %}">
+              {% csrf_token %}
+              <button type="submit">Unsave</button>
+            </form>
+					{% endif %}
+				</li>
+			{% endfor %}
+		</ul>
+	{% else %}
+		<p>No kitties available at this time.</p>
+	{% endif %}
+</body>
+</html>
+
