@@ -8,17 +8,17 @@ from playwright.sync_api import sync_playwright
 logger = logging.getLogger(__name__)
 
 
-def scrape_shelter(shelter) -> list[dict[str, Any]]:
+def scrape_shelter(shelter) -> tuple[list[dict[str, Any]], list]:
     """Scrape the shelter website for kitty data.
 
     Args:
             shelter: A Shelter model instance
 
     Returns:
-            List of dictionaries containing kitty data with keys:
-            name, age, weight, gender, breed, color, image_url
+            Tuple of (list of dictionaries containing kitty data, list of errors)
     """
     kitties_data = []
+    errors = []
 
     try:
         with sync_playwright() as p:
@@ -36,7 +36,7 @@ def scrape_shelter(shelter) -> list[dict[str, Any]]:
                 logger.warning(
                     "Timeout waiting for kitty cards on %s", shelter.scrape_url
                 )
-                return []
+                return [], []  # Return tuple
 
             # First, collect all card links and names from the listing page
             kitty_cards = page.query_selector_all(".adoption__item")
@@ -49,7 +49,7 @@ def scrape_shelter(shelter) -> list[dict[str, Any]]:
                 card_links.append({"name": name_text, "link": card_link})
 
             # Now loop through the collected links to fetch detail pages
-            for card_info in card_links:
+            for card_info in card_links[0:1]:
                 try:
                     name_text = card_info["name"]
                     card_link = card_info["link"]
@@ -130,12 +130,13 @@ def scrape_shelter(shelter) -> list[dict[str, Any]]:
 
                 except Exception as e:
                     logger.error("Error extracting kitty data: %s", e)
+                    errors.append(e)
                     continue
 
             browser.close()
 
     except Exception as e:
-        logger.error("Error scraping %s: %s", shelter.name, e)
-        raise e
+        errors = [e]
+        return [], errors  # Return tuple
 
-    return kitties_data
+    return kitties_data, errors  # Return tuple

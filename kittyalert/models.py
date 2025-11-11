@@ -30,14 +30,25 @@ class Shelter(TimeStampedModel):
 class Kitty(TimeStampedModel):
     """A kitty that is up for adoption."""
 
+    class Meta:
+        """Meta configuration for the Kitty model"""
+
+        # Add unique constraint for description + image_url
+        constraints = [
+            models.UniqueConstraint(
+                fields=["shelter", "description"],
+                name="unique_kitty_by_description_and_image",
+            )
+        ]
+
     name = models.TextField(db_comment="The name of the kitty")
-    age = models.IntegerField(db_comment="The age of the kitty in years")
-    weight = models.IntegerField(db_comment="The weight of the kitty in pounds")
+    age = models.TextField(db_comment="The age of the kitty in years")
+    weight = models.TextField(db_comment="The weight of the kitty in pounds")
     gender = models.TextField(db_comment="The gender of the kitty")
     breed = models.TextField(db_comment="The breed of the kitty")
     color = models.TextField(db_comment="The color/pattern of the kitty")
-    image_url = models.URLField(
-        db_comment="URL of the kitty's image on the SFPCA website",
+    description = models.TextField(
+        blank=True, null=True, db_comment="The description of the kitty"
     )
     shelter = models.ForeignKey(
         Shelter,
@@ -46,6 +57,9 @@ class Kitty(TimeStampedModel):
     )
     is_adopted = models.BooleanField(
         default=False, db_comment="Whether the kitty has been adopted"
+    )
+    image_urls = models.JSONField(
+        blank=True, null=True, db_comment="The URLs of the kitty's images"
     )
 
 
@@ -75,8 +89,7 @@ class ScrapeRun(TimeStampedModel):
         choices=[
             ("waiting", "Waiting"),
             ("running", "Running"),
-            ("success", "Successful"),
-            ("failed", "Failed"),
+            ("completed", "Completed"),
         ],
         default="waiting",
         db_comment="Current status of the scrape operation",
@@ -87,7 +100,7 @@ class ScrapeRun(TimeStampedModel):
     kitties_new = models.IntegerField(
         default=0, db_comment="Number of new kitties discovered in this scrape"
     )
-    error_message = models.TextField(
+    error = models.JSONField(
         blank=True, null=True, db_comment="Error message if the scrape failed"
     )
     raw_data = models.JSONField(

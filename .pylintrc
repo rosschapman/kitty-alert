@@ -1,0 +1,6 @@
+[MASTER]
+load-plugins=pylint_django
+
+[MESSAGES CONTROL]
+# Or disable specific warnings if needed
+# disable=unused-variable

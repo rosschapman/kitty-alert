@@ -7,13 +7,13 @@
 </head>
 <body>
 	<h1>😻 Available Kitties</h1>
-	<p>Welcome, {{ adopter.user.username }}! <a href="{% url 'adopter_detail' adopter.id %}">View My Saved Kitties</a></p>
+	<p>Welcome, {{ adopter.user.username }}! <a href="{% url 'adopter_kitty_list' adopter.id %}">View My Saved Kitties</a></p>
 
-  {% if error %}
+  {% for error in errors %}
     <div class="alert alert-danger" role="alert">
-      <span>{{ error }}</span>
+      <span>Error: {{ error }}</span>
     </div>
-  {% endif %}
+  {% endfor %}
 
 	{% if kitties %}
 		<ul>
@@ -41,10 +41,18 @@
 						<dt>Shelter:</dt>
 						<dd>{{ kitty.shelter.name }}</dd>
 					</dl>
-          {% if kitty in adopter.kitties.all %}
-            <form method="post" action="{% url 'kitty_unsave' kitty.id adopter.id %}">
+          {% if kitty not in adopter_kitties %}
+            <form method="post" action="{% url 'kitty_save' adopter.id %}">
               {% csrf_token %}
-              <button type="submit">Unsave</button>
+              <input type="hidden" name="name" value="{{ kitty.name }}">
+              <input type="hidden" name="age" value="{{ kitty.age }}">
+              <input type="hidden" name="weight" value="{{ kitty.weight }}">
+              <input type="hidden" name="gender" value="{{ kitty.gender }}">
+              <input type="hidden" name="breed" value="{{ kitty.breed }}">
+              <input type="hidden" name="color" value="{{ kitty.color }}">
+              <input type="hidden" name="description" value="{{ kitty.description }}">
+              <input type="hidden" name="image_urls" value='{{ kitty.image_urlsfe }}'>
+              <button type="submit">Save</button>
             </form>
 					{% endif %}
 				</li>

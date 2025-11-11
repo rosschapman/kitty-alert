@@ -27,7 +27,16 @@ urlpatterns = [
     path("accounts/logout/", auth_views.LogoutView.as_view(), name="logout"),
     path("", views.home, name="home"),
     path("adopters/<int:adopter_id>/", views.adopter_detail, name="adopter_detail"),
+    path(
+        "adopters/<int:adopter_id>/kitties/",
+        views.adopter_kitty_list,
+        name="adopter_kitty_list",
+    ),
     path("kitties/", views.kitty_list, name="kitty_list"),
-    path("kitties/<int:kitty_id>/save/", views.kitty_save, name="kitty_save"),
-    path("kitties/<int:kitty_id>/unsave/", views.kitty_unsave, name="kitty_unsave"),
+    path("kitties/save/<int:adopter_id>/", views.kitty_save, name="kitty_save"),
+    path(
+        "kitties/unsave/<int:kitty_id>/<int:adopter_id>/",
+        views.kitty_unsave,
+        name="kitty_unsave",
+    ),
 ]
