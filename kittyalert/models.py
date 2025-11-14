@@ -4,7 +4,6 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django_extensions.db.fields import AutoSlugField
 from django_extensions.db.models import TimeStampedModel
-from phonenumber_field.modelfields import PhoneNumberField
 
 User = get_user_model()
 
@@ -78,11 +77,7 @@ class Adopter(TimeStampedModel):
         db_comment="The Django user account associated with this adopter",
     )
     kitties = models.ManyToManyField(Kitty)
-    phone_number = PhoneNumberField(
-        blank=True,
-        null=True,
-        db_comment="Phone number for SMS notifications",
-    )
+    email = models.EmailField(db_comment="The email address of the adopter")
 
 
 class ScrapeRun(TimeStampedModel):

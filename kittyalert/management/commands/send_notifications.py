@@ -1,14 +1,14 @@
 from django.core.management.base import BaseCommand
 
+from kittyalert.email import format_kitty_notification, send_email_notification
 from kittyalert.models import ScrapeRun, Subscription
-from kittyalert.sms import format_kitty_notification, send_sms
 
 
 class Command(BaseCommand):
-    help = "Send SMS notifications for new kitties to all subscribers"
+    help = "Send email notifications for new kitties to all subscribers"
 
     def handle(self, *args, **options):
-        """Send SMS notifications for new kitties to all subscribers of the last scrape run"""
+        """Send email notifications for new kitties to all subscribers of the last scrape run"""
 
         # Get the latest and previous scrape runs
         scrape_runs = ScrapeRun.objects.order_by("-created")[:2]
@@ -53,43 +53,40 @@ class Command(BaseCommand):
             )
             return
 
-        # Format the notification message
-        message = format_kitty_notification(new_kitties, shelter.name)
+        subject, message = format_kitty_notification(
+            new_kitties, shelter.name, shelter.scrape_url
+        )
 
-        # Send SMS to each subscriber with a phone number
         sent_count = 0
-        skipped_count = 0
 
         for subscription in subscriptions:
             adopter = subscription.adopter
-            if not adopter.phone_number:
-                skipped_count += 1
+            user_email = adopter.user.email
+            if not user_email:
                 self.stdout.write(
                     self.style.WARNING(
-                        f"Skipping {adopter.user.username} - no phone number"
+                        f"Skipping {adopter.user.username} - no email address"
                     )
                 )
                 continue
 
-            # Convert PhoneNumber object to E.164 format string for Twilio
-            phone_number_str = adopter.phone_number.as_e164
-            success = send_sms(phone_number_str, message)
+            success = send_email_notification(user_email, subject, message)
             if success:
                 sent_count += 1
                 self.stdout.write(
                     self.style.SUCCESS(
-                        f"Sent notification to {adopter.user.username} at {phone_number_str}"
+                        f"Sent notification to {adopter.user.username} at {user_email}"
                     )
                 )
             else:
                 self.stdout.write(
                     self.style.ERROR(
-                        f"Failed to send notification to {adopter.user.username} at {phone_number_str}"
+                        f"Failed to send notification to {adopter.user.username} at {user_email}"
                     )
                 )
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"\nNotifications sent: {sent_count} | Skipped: {skipped_count} | New kitties: {len(new_kitties)}"
+                f"\nNotifications sent: {sent_count} | New kitties: {len(new_kitties)}"
             )
         )

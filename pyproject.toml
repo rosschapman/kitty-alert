@@ -13,4 +13,5 @@ dependencies = [
   "pylint-django>=2.6.1",
   "pytest-playwright>=0.7.1",
   "ruff>=0.14.4",
+  "python-dotenv>=1.0.0",
 ]
