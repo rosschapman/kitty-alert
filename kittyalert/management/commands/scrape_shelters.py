@@ -31,7 +31,9 @@ class Command(BaseCommand):
             scrape_run.raw_data = kitties
             scrape_run.status = "completed"
             scrape_run.save()
-            scrape_runs.append(scrape_run.id)
+            scrape_runs.append(str(scrape_run.id))
+
+            self.stdout.write(f"Scrape run {scrape_run.id} completed")
 
         self.stdout.write(
             self.style.SUCCESS(

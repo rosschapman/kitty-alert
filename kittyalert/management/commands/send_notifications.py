@@ -23,7 +23,7 @@ class Command(BaseCommand):
 
         # Find new kitties by comparing descriptions
         previous_scrape_run_descriptions = {
-            kitty_data.get("description", "")
+            kitty_data["description"]
             for kitty_data in previous_scrape_run.raw_data or []
         }
 

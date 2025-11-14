@@ -50,9 +50,10 @@
 							<input type="hidden" name="gender" value="{{ kitty.gender }}">
 							<input type="hidden" name="breed" value="{{ kitty.breed }}">
 							<input type="hidden" name="color" value="{{ kitty.color }}">
-							<input type="hidden" name="description" value="{{ kitty.description }}">
-							<input type="hidden" name="image_urls" value='{{
-							kitty.image_urls|safe }}'>
+					<input type="hidden" name="description" value="{{ kitty.description }}">
+					{% for image_url in kitty.image_urls %}
+						<input type="hidden" name="image_urls" value="{{ image_url }}">
+					{% endfor %}
               <input type="hidden" name="link" value="{{ kitty.link }}">
 							<button type="submit">Save</button>
 						</form>

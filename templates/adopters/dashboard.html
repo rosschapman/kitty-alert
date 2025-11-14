@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% block title %}Adopter Dashboard{% endblock %}
 
 {% block content %}
@@ -13,7 +12,7 @@
           <img src="{{ image_url }}" alt="{{ kitty.name }}" style="max-width: 200px;">
         {% endfor %}
         <a href="{{ kitty.link }}">{{ kitty.name }}</a>
-        <form method="post" action="{% url 'kitty_unsave' kitty.id adopter.id %}">
+        <form method="post" action="{% url 'kitty_unsave' adopter.id kitty.id %}">
           {% csrf_token %}
           <button type="submit">Unsave</button>
         </form>

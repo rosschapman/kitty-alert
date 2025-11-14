@@ -3,6 +3,7 @@
 import logging
 from typing import Any
 
+import tqdm
 from playwright.sync_api import sync_playwright
 
 logger = logging.getLogger(__name__)
@@ -51,7 +52,7 @@ def scrape_shelter(shelter) -> tuple[list[dict[str, Any]], list]:
                     {"name": name_text, "link": card_link, "location": location_text}
                 )
 
-            for card_info in card_links:
+            for card_info in tqdm.tqdm(card_links):
                 try:
                     name_text = card_info["name"]
                     card_link = card_info["link"]

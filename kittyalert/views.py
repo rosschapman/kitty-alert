@@ -70,6 +70,8 @@ def shelter_kitty_list(request, shelter_id):
         errors = latest_scrape_run.errors
         cache.set(cache_key, {"kitties": kitties, "errors": errors})
 
+    # No need to create image_urls_json anymore since we're using multiple inputs
+
     return render(
         request,
         "shelters/list.html",
@@ -93,7 +95,7 @@ def kitty_save(request, adopter_id):
         description=request.POST["description"],
         defaults={
             "name": request.POST["name"],
-            "image_urls": request.POST.get("image_urls"),
+            "image_urls": request.POST.getlist("image_urls"),
             "weight": request.POST["weight"],
             "gender": request.POST["gender"],
             "breed": request.POST["breed"],
