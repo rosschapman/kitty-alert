@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Adopter Dashboard{% endblock %}
+
+{% block content %}
+	<h1>Adopter Dashboard</h1>
+	<p>Welcome, {{ adopter.user.username }}!</p>
+	<h2>My Saved Kitties</h2>
+  <ul>
+    {% for kitty in adopter.kitties.all %}
+      <li>
+        {% for image_url in kitty.image_urls %}
+          <img src="{{ image_url }}" alt="{{ kitty.name }}" style="max-width: 200px;">
+        {% endfor %}
+        <a href="{{ kitty.link }}">{{ kitty.name }}</a>
+        <form method="post" action="{% url 'kitty_unsave' kitty.id adopter.id %}">
+          {% csrf_token %}
+          <button type="submit">Unsave</button>
+        </form>
+      </li>
+    {% endfor %}
+  </ul>
+  <h2>My Subscriptions</h2>
+  <ul>
+    {% for shelter in shelters %}
+      <li>
+        <a href="{% url 'shelter_kitty_list' shelter.id %}">{{ shelter.name }}</a>
+        {% if shelter.is_subscribed %}
+          <form method="post" action="{% url 'unsubscribe_from_shelter' adopter.id shelter.id %}">
+            {% csrf_token %}
+            <button type="submit">Unsubscribe</button>
+          </form>
+        {% else %}
+          <form method="post" action="{% url 'subscribe_to_shelter' adopter.id shelter.id %}">
+            {% csrf_token %}
+            <button type="submit">Subscribe</button>
+          </form>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+
+{% endblock %}

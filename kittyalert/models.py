@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django_extensions.db.fields import AutoSlugField
 from django_extensions.db.models import TimeStampedModel
+from phonenumber_field.modelfields import PhoneNumberField
 
 User = get_user_model()
 
@@ -23,7 +24,6 @@ class Shelter(TimeStampedModel):
     kitties = models.ManyToManyField(
         "Kitty",
         related_name="shelters",
-        db_comment="Kitties that are available for adoption at this shelter",
     )
 
 
@@ -41,6 +41,9 @@ class Kitty(TimeStampedModel):
             )
         ]
 
+    link = models.URLField(
+        db_comment="The URL of the kitty's page on the shelter's website"
+    )
     name = models.TextField(db_comment="The name of the kitty")
     age = models.TextField(db_comment="The age of the kitty in years")
     weight = models.TextField(db_comment="The weight of the kitty in pounds")
@@ -61,6 +64,9 @@ class Kitty(TimeStampedModel):
     image_urls = models.JSONField(
         blank=True, null=True, db_comment="The URLs of the kitty's images"
     )
+    location = models.TextField(
+        db_comment="The location of the kitty or whether they are bonded with another kitty"
+    )
 
 
 class Adopter(TimeStampedModel):
@@ -71,8 +77,11 @@ class Adopter(TimeStampedModel):
         on_delete=models.CASCADE,
         db_comment="The Django user account associated with this adopter",
     )
-    kitties = models.ManyToManyField(
-        Kitty, db_comment="Kitties that this adopter has saved/alerts for"
+    kitties = models.ManyToManyField(Kitty)
+    phone_number = PhoneNumberField(
+        blank=True,
+        null=True,
+        db_comment="Phone number for SMS notifications",
     )
 
 
@@ -97,11 +106,8 @@ class ScrapeRun(TimeStampedModel):
     kitties_found = models.IntegerField(
         default=0, db_comment="Total number of kitties found during the scrape"
     )
-    kitties_new = models.IntegerField(
-        default=0, db_comment="Number of new kitties discovered in this scrape"
-    )
-    error = models.JSONField(
-        blank=True, null=True, db_comment="Error message if the scrape failed"
+    errors = models.JSONField(
+        blank=True, null=True, db_comment="Errors encountered during the scrape"
     )
     raw_data = models.JSONField(
         blank=True,
@@ -116,3 +122,20 @@ class ScrapeRun(TimeStampedModel):
         indexes = [
             models.Index(fields=["shelter", "status"]),
         ]
+
+
+class Subscription(TimeStampedModel):
+    """A subscription to a shelter's kitty alerts"""
+
+    adopter = models.ForeignKey(
+        Adopter,
+        on_delete=models.CASCADE,
+        related_name="subscriptions",
+        db_comment="The adopter that is subscribed to this shelter's kitties",
+    )
+    shelter = models.ForeignKey(
+        Shelter,
+        on_delete=models.CASCADE,
+        related_name="subscriptions",
+        db_comment="The shelter that is subscribed to",
+    )

@@ -1,38 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Kitties - Kitty Alert</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Kitties - Kitty Alert{% endblock %}
+
+{% block content %}
 	<h1>😻 My Saved Kitties</h1>
-	<p>Welcome, {{ adopter.user.username }}!
+	<p>Welcome, {{ adopter.user.username }}!</p>
 
-  {% if adopter_kitties %}
-    <ul>
-      {% for kitty in adopter_kitties %}
-        {% for image_url in kitty.image_urls %}
-          <img src="{{ image_url }}" alt="{{ kitty.name }}" style="max-width: 200px;">
-        {% endfor %}
-        <li>{{ kitty.name }}</li>
-        <dl>
-          <dt>Age:</dt>
-          <dd>{{ kitty.age }} years</dd>
-          <dt>Weight:</dt>
-          <dd>{{ kitty.weight }} lbs</dd>
-          <dt>Gender:</dt>
-          <dd>{{ kitty.gender }}</dd>
-        </dl>
-        <form method="post" action="{% url 'kitty_unsave' kitty.id adopter.id %}">
-          {% csrf_token %}
-          <button type="submit">Unsave</button>
-        </form>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No saved kitties found.</p>
-  {% endif %}
-</body>
-</html>
-
+	{% if adopter_kitties %}
+		<ul>
+			{% for kitty in adopter_kitties %}
+				<li>
+					{% for image_url in kitty.image_urls %}
+						<img src="{{ image_url }}" alt="{{ kitty.name }}" style="max-width: 200px;">
+					{% endfor %}
+					<h2>{{ kitty.name }}</h2>
+					<dl>
+						<dt>Age:</dt>
+						<dd>{{ kitty.age }} years</dd>
+						<dt>Weight:</dt>
+						<dd>{{ kitty.weight }} lbs</dd>
+						<dt>Gender:</dt>
+						<dd>{{ kitty.gender }}</dd>
+						<dt>Breed:</dt>
+						<dd>{{ kitty.breed }}</dd>
+						<dt>Color:</dt>
+						<dd>{{ kitty.color }}</dd>
+            <dt>Location:</dt>
+						<dd>{{ kitty.location }}</dd>
+						<dt>Description:</dt>
+						<dd>{{ kitty.description }}</dd>
+						<dt>Link:</dt>
+						<dd><a href="{{ kitty.link }}" target="_blank">{{ kitty.link }}</a></dd>
+					</dl>
+					<form method="post" action="{% url 'kitty_unsave' kitty.id adopter.id %}">
+						{% csrf_token %}
+						<button type="submit">Unsave</button>
+					</form>
+				</li>
+			{% endfor %}
+		</ul>
+	{% else %}
+		<p>No saved kitties found.</p>
+	{% endif %}
+{% endblock %}

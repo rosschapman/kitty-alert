@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Kitties - Kitty Alert{% endblock %}
+
+{% block content %}
+	<h1>😻 Available Kitties</h1>
+	<p>Welcome, {{ adopter.user.username }}! <a href="{% url 'adopter_dashboard' adopter.id %}">View My Saved Kitties</a></p>
+
+	{% for error in errors %}
+		<div>
+			<span>Error: {{ error }}</span>
+		</div>
+	{% endfor %}
+
+  <p>Available at {{ shelter.name }}</p>
+	{% if kitties %}
+		<ul>
+			{% for kitty in kitties %}
+				<li>
+					{% if kitty.image_url %}
+						<img src="{{ kitty.image_url }}" alt="{{ kitty.name }}" style="max-width: 200px;">
+					{% endif %}
+					<h2>{{ kitty.name }}</h2>
+					<div>
+						{% for image_url in kitty.image_urls %}
+							<img src="{{ image_url }}" alt="{{ kitty.name }}" style="max-width: 200px;">
+						{% endfor %}
+					</div>
+					<dl>
+						<dt>Age:</dt>
+						<dd>{{ kitty.age }} years</dd>
+						<dt>Weight:</dt>
+						<dd>{{ kitty.weight }} lbs</dd>
+						<dt>Gender:</dt>
+						<dd>{{ kitty.gender }}</dd>
+						<dt>Breed:</dt>
+						<dd>{{ kitty.breed }}</dd>
+						<dt>Color:</dt>
+						<dd>{{ kitty.color }}</dd>
+						<dt>Location:</dt>
+						<dd>{{ kitty.location }}</dd>
+					</dl>
+          <a href="{{ kitty.link }}">View Kitty</a>
+					{% if kitty not in adopter_kitties %}
+						<form method="post" action="{% url 'kitty_save' adopter.id %}">
+							{% csrf_token %}
+							<input type="hidden" name="name" value="{{ kitty.name }}">
+							<input type="hidden" name="age" value="{{ kitty.age }}">
+							<input type="hidden" name="weight" value="{{ kitty.weight }}">
+							<input type="hidden" name="gender" value="{{ kitty.gender }}">
+							<input type="hidden" name="breed" value="{{ kitty.breed }}">
+							<input type="hidden" name="color" value="{{ kitty.color }}">
+							<input type="hidden" name="description" value="{{ kitty.description }}">
+							<input type="hidden" name="image_urls" value='{{
+							kitty.image_urls|safe }}'>
+              <input type="hidden" name="link" value="{{ kitty.link }}">
+							<button type="submit">Save</button>
+						</form>
+					{% endif %}
+				</li>
+			{% endfor %}
+		</ul>
+	{% else %}
+		<p>No kitties available at this time.</p>
+	{% endif %}
+{% endblock %}

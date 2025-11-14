@@ -12,10 +12,10 @@ def scrape_shelter(shelter) -> tuple[list[dict[str, Any]], list]:
     """Scrape the shelter website for kitty data.
 
     Args:
-            shelter: A Shelter model instance
+        shelter: A Shelter model instance
 
     Returns:
-            Tuple of (list of dictionaries containing kitty data, list of errors)
+        Tuple of (list of dictionaries containing kitty data, list of errors)
     """
     kitties_data = []
     errors = []
@@ -25,20 +25,16 @@ def scrape_shelter(shelter) -> tuple[list[dict[str, Any]], list]:
             browser = p.chromium.launch(headless=True)
             page = browser.new_page()
 
-            # Navigate to the shelter's cat adoption page
             page.goto(shelter.scrape_url, wait_until="domcontentloaded")
 
-            # Wait for kitty cards to load - adjust selector based on actual site structure
-            # Common selectors to try: ".pet-card", ".animal-card", "[data-pet]", etc.
             try:
                 page.wait_for_selector(".adoption__item", timeout=5000)
             except TimeoutError:
                 logger.warning(
                     "Timeout waiting for kitty cards on %s", shelter.scrape_url
                 )
-                return [], []  # Return tuple
+                return [], []
 
-            # First, collect all card links and names from the listing page
             kitty_cards = page.query_selector_all(".adoption__item")
             card_links = []
 
@@ -46,18 +42,22 @@ def scrape_shelter(shelter) -> tuple[list[dict[str, Any]], list]:
                 name_element = card.query_selector(".adoption__item--name a")
                 name_text = name_element.inner_text().strip()
                 card_link = name_element.get_attribute("href")
-                card_links.append({"name": name_text, "link": card_link})
+                location_text = (
+                    page.query_selector(".adoption__item--location")
+                    .inner_text()
+                    .strip()
+                )
+                card_links.append(
+                    {"name": name_text, "link": card_link, "location": location_text}
+                )
 
-            # Now loop through the collected links to fetch detail pages
-            for card_info in card_links[0:1]:
+            for card_info in card_links:
                 try:
                     name_text = card_info["name"]
                     card_link = card_info["link"]
 
-                    # Navigate to the card's detail page
                     page.goto(card_link, wait_until="domcontentloaded")
 
-                    # Wait for content to load
                     try:
                         page.wait_for_selector(
                             ".elementor-widget-theme-post-content .elementor-widget-container",
@@ -68,7 +68,6 @@ def scrape_shelter(shelter) -> tuple[list[dict[str, Any]], list]:
                             "Timeout waiting for card content on %s", card_link
                         )
 
-                    # Extract card text
                     description_element = page.query_selector(
                         ".elementor-widget-theme-post-content .elementor-widget-container"
                     )
@@ -116,6 +115,7 @@ def scrape_shelter(shelter) -> tuple[list[dict[str, Any]], list]:
                     ]
 
                     kitty_data = {
+                        "link": card_link,
                         "name": name_text,
                         "age": age_text,
                         "weight": weight_text,
@@ -124,9 +124,9 @@ def scrape_shelter(shelter) -> tuple[list[dict[str, Any]], list]:
                         "color": "TODO",  # TODO: Extract color from image
                         "description": card_text,
                         "image_urls": image_urls,
+                        "location": location_text,
                     }
                     kitties_data.append(kitty_data)
-                    print(kitty_data)
 
                 except Exception as e:
                     logger.error("Error extracting kitty data: %s", e)
@@ -136,7 +136,7 @@ def scrape_shelter(shelter) -> tuple[list[dict[str, Any]], list]:
             browser.close()
 
     except Exception as e:
-        errors = [e]
-        return [], errors  # Return tuple
+        errors = [str(e)]
+        return [], errors
 
-    return kitties_data, errors  # Return tuple
+    return kitties_data, errors

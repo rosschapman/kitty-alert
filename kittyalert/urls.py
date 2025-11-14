@@ -15,6 +15,7 @@ Including another URLconf
         2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+from debug_toolbar.toolbar import debug_toolbar_urls
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path
@@ -26,17 +27,28 @@ urlpatterns = [
     path("accounts/login/", auth_views.LoginView.as_view(), name="login"),
     path("accounts/logout/", auth_views.LogoutView.as_view(), name="logout"),
     path("", views.home, name="home"),
-    path("adopters/<int:adopter_id>/", views.adopter_detail, name="adopter_detail"),
     path(
-        "adopters/<int:adopter_id>/kitties/",
-        views.adopter_kitty_list,
-        name="adopter_kitty_list",
+        "adopters/<int:adopter_id>/", views.adopter_dashboard, name="adopter_dashboard"
     ),
-    path("kitties/", views.kitty_list, name="kitty_list"),
-    path("kitties/save/<int:adopter_id>/", views.kitty_save, name="kitty_save"),
     path(
-        "kitties/unsave/<int:kitty_id>/<int:adopter_id>/",
+        "shelters/<int:shelter_id>/",
+        views.shelter_kitty_list,
+        name="shelter_kitty_list",
+    ),
+    path("adopters/<int:adopter_id>/save/", views.kitty_save, name="kitty_save"),
+    path(
+        "adopters/<int:adopter_id>/unsave/<int:kitty_id>/",
         views.kitty_unsave,
         name="kitty_unsave",
     ),
-]
+    path(
+        "adopters/<int:adopter_id>/subscribe/<int:shelter_id>/",
+        views.subscribe_to_shelter,
+        name="subscribe_to_shelter",
+    ),
+    path(
+        "adopters/<int:adopter_id>/unsubscribe/<int:shelter_id>/",
+        views.unsubscribe_from_shelter,
+        name="unsubscribe_from_shelter",
+    ),
+] + debug_toolbar_urls()
