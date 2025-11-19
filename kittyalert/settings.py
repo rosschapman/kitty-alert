@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "phonenumber_field",
     "kittyalert",
+    "django_simple_deploy",
 ]
 
 MIDDLEWARE = [

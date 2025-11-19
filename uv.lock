@@ -129,6 +129,42 @@ phonenumberslite = [
 ]
 
 [[package]]
+name = "django-simple-deploy"
+version = "1.4.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+    { name = "pluggy" },
+    { name = "requests" },
+    { name = "toml" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/db/72/ed3d986afaeed4fa41ec8ed4df1a007ea2c0cbf8eb4f2b5dd094e83e82a5/django_simple_deploy-1.4.0.tar.gz", hash = "sha256:27748ff3dfcccc33eee4d2a633a934c41b8578bc05bdc58c8ad4d82f5237f91c", size = 69514, upload-time = "2025-11-08T17:58:19.451Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/06/e8/18d617f6effd086c283f4b459af73d90df1b7a9740a22eab6aaf1fc92a22/django_simple_deploy-1.4.0-py3-none-any.whl", hash = "sha256:2623165361635d11b950a48e01b8145d0ed373732628ed75148c9d724386d97c", size = 29959, upload-time = "2025-11-08T17:58:18.467Z" },
+]
+
+[package.optional-dependencies]
+fly-io = [
+    { name = "dsd-flyio" },
+]
+
+[[package]]
+name = "dsd-flyio"
+version = "1.2.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+    { name = "django-simple-deploy" },
+    { name = "pluggy" },
+    { name = "requests" },
+    { name = "toml" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/7a/5c/d89ffa60c7644a38a6efcf6389ebec09b6e1085b446fa88f56707bf2ab5e/dsd_flyio-1.2.1.tar.gz", hash = "sha256:a12f113745c28ee0c6d6a822783418432cf86052128fa7244adcf66837ca7e06", size = 16154, upload-time = "2025-09-15T20:00:13.125Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/53/88/84314b1e87d924157816c6053527b2c37a0a1daaf7162447258e89530293/dsd_flyio-1.2.1-py3-none-any.whl", hash = "sha256:55ba498b6e86d2abd177c7f07262ee8e1617ccbde8efb2d21874fdff96366a1f", size = 18938, upload-time = "2025-09-15T20:00:11.729Z" },
+]
+
+[[package]]
 name = "greenlet"
 version = "3.2.4"
 source = { registry = "https://pypi.org/simple" }
@@ -181,6 +217,7 @@ dependencies = [
     { name = "django-debug-toolbar" },
     { name = "django-extensions" },
     { name = "django-phonenumber-field", extra = ["phonenumberslite"] },
+    { name = "django-simple-deploy", extra = ["fly-io"] },
     { name = "playwright" },
     { name = "pylint-django" },
     { name = "pytest-playwright" },
@@ -195,6 +232,7 @@ requires-dist = [
     { name = "django-debug-toolbar", specifier = ">=6.1.0" },
     { name = "django-extensions", specifier = ">=4.1" },
     { name = "django-phonenumber-field", extras = ["phonenumberslite"], specifier = ">=7.2.0" },
+    { name = "django-simple-deploy", extras = ["fly-io"], specifier = ">=1.4.0" },
     { name = "playwright", specifier = ">=1.48.0" },
     { name = "pylint-django", specifier = ">=2.6.1" },
     { name = "pytest-playwright", specifier = ">=0.7.1" },
@@ -453,6 +491,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/ab/e2/e9a00f0ccb71718418230718b3d900e71a5d16e701a3dae079a21e9cd8f8/text-unidecode-1.3.tar.gz", hash = "sha256:bad6603bb14d279193107714b288be206cac565dfa49aa5b105294dd5c4aab93", size = 76885, upload-time = "2019-08-30T21:36:45.405Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a6/a5/c0b6468d3824fe3fde30dbb5e1f687b291608f9473681bbf7dabbf5a87d7/text_unidecode-1.3-py2.py3-none-any.whl", hash = "sha256:1311f10e8b895935241623731c2ba64f4c455287888b18189350b67134a822e8", size = 78154, upload-time = "2019-08-30T21:37:03.543Z" },
+]
+
+[[package]]
+name = "toml"
+version = "0.10.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/be/ba/1f744cdc819428fc6b5084ec34d9b30660f6f9daaf70eead706e3203ec3c/toml-0.10.2.tar.gz", hash = "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f", size = 22253, upload-time = "2020-11-01T01:40:22.204Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/44/6f/7120676b6d73228c96e17f1f794d8ab046fc910d781c8d151120c3f1569e/toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b", size = 16588, upload-time = "2020-11-01T01:40:20.672Z" },
 ]
 
 [[package]]

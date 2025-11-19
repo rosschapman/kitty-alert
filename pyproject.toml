@@ -15,4 +15,5 @@ dependencies = [
   "ruff>=0.14.4",
   "python-dotenv>=1.0.0",
   "tqdm>=4.67.1",
+  "django-simple-deploy[fly-io]>=1.4.0",
 ]
