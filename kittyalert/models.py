@@ -134,3 +134,43 @@ class Subscription(TimeStampedModel):
         related_name="subscriptions",
         db_comment="The shelter that is subscribed to",
     )
+
+
+class Notification(TimeStampedModel):
+    """A notification for a subscription"""
+
+    class Meta:
+        """Meta configuration for the Notification model"""
+
+        indexes = [
+            models.Index(fields=["subscription", "-created"]),
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["subscription", "scrape_run"],
+                name="unique_notification_by_subscription_and_scrape_run",
+            )
+        ]
+
+    subscription = models.ForeignKey(
+        Subscription,
+        on_delete=models.CASCADE,
+        related_name="notifications",
+        db_comment="The subscription that was notified",
+    )
+    scrape_run = models.ForeignKey(
+        ScrapeRun,
+        on_delete=models.CASCADE,
+        related_name="notifications",
+        db_comment="The scrape run that was used to send the notification",
+    )
+    email_sent_at = models.DateTimeField(
+        blank=True,
+        null=True,
+        db_comment="The time the email was sent",
+    )
+    errors = models.JSONField(
+        blank=True,
+        null=True,
+        db_comment="Errors encountered during the notification",
+    )

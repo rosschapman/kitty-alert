@@ -1,6 +1,7 @@
 """Scraper for the 😻 Kitty Alert app"""
 
 import logging
+import traceback
 from typing import Any
 
 import tqdm
@@ -43,11 +44,13 @@ def scrape_shelter(shelter) -> tuple[list[dict[str, Any]], list]:
                 name_element = card.query_selector(".adoption__item--name a")
                 name_text = name_element.inner_text().strip()
                 card_link = name_element.get_attribute("href")
-                location_text = (
-                    page.query_selector(".adoption__item--location")
-                    .inner_text()
-                    .strip()
-                )
+                location_element = card.query_selector("div:nth-child(3)")
+
+                if location_element:
+                    location_text = location_element.inner_text().strip()
+                else:
+                    location_text = "N/A"
+
                 card_links.append(
                     {"name": name_text, "link": card_link, "location": location_text}
                 )
@@ -130,14 +133,17 @@ def scrape_shelter(shelter) -> tuple[list[dict[str, Any]], list]:
                     kitties_data.append(kitty_data)
 
                 except Exception as e:
-                    logger.error("Error extracting kitty data: %s", e)
-                    errors.append(e)
+                    error_msg = f"{str(e)}\n{traceback.format_exc()}"
+                    logger.error("Error extracting kitty data: %s", error_msg)
+                    errors.append(error_msg)
                     continue
 
             browser.close()
 
     except Exception as e:
-        errors = [str(e)]
+        error_msg = f"{str(e)}\n{traceback.format_exc()}"
+        errors = [error_msg]
+        logger.error("Error scraping shelter: %s", error_msg)
         return [], errors
 
     return kitties_data, errors
